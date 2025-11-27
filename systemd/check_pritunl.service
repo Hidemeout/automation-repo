@@ -1,0 +1,7 @@
+[Unit]
+Description=Check Pritunl status
+
+
+[Service]
+Type=oneshot
+ExecStart=/opt/automation/scripts/check_pritunl.sh

@@ -1,12 +1,21 @@
 #!/bin/bash
 set -e
 
-echo "[DEPLOY] Старт деплоя..."
+REPO_DIR=/opt/automation/deploy_target
 
-cd /opt/automation || exit 1
-git pull
+if [ ! -d "$REPO_DIR" ]; then
+  mkdir -p "$REPO_DIR"
+  git clone https://github.com/YOUR_ORG/YOUR_APP.git "$REPO_DIR"
+else
+  cd "$REPO_DIR"
+  git pull origin main
+fi
 
-docker compose down || true
-docker compose up -d --build
+if [ -f "$REPO_DIR/docker-compose.yml" ]; then
+  cd "$REPO_DIR"
+  docker compose pull || true
+  docker compose down || true
+  docker compose up -d --build
+fi
 
-echo "[DEPLOY] Деплой завершён успешно!"
+systemctl restart pritunl || true
